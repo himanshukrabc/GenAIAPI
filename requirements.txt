@@ -10,3 +10,4 @@ python-dotenv
 llama-index-llms-groq
 fastapi
 uvicorn
+torch
