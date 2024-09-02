@@ -9,8 +9,8 @@ load_dotenv()
 from llama_parse import LlamaParse
 llamaparse_api_key = os.getenv("LLAMA_CLOUD_API_KEY")
 import pickle
-from llama_index.vector_stores.qdrant import QdrantVectorStore
-from llama_index.core import VectorStoreIndex, StorageContext
+from llama_index.vector_stores.qdrant import QdrantVectorStore # type: ignore
+from llama_index.core import VectorStoreIndex, StorageContext # type: ignore
 import qdrant_client
 
 qdrant_url = os.getenv("QDRANT_URL")
@@ -30,6 +30,7 @@ groq_api_key = os.getenv("GROQ_API_KEY")
 
 class SRTModel:
     def __init__(self):
+        print(qdrant_url)
         self.load_or_parse_data()
         """ embed_model = OllamaEmbedding(
             model_name="nomic-embed-text",
@@ -42,6 +43,7 @@ class SRTModel:
         self.Settings.llm = Groq(model="mixtral-8x7b-32768", api_key=groq_api_key)
         self.client = qdrant_client.QdrantClient(api_key=qdrant_api_key, url=qdrant_url,)
         self.vector_store = QdrantVectorStore(client=self.client, collection_name='qdrant_rag')
+        print(QdrantVectorStore(client=self.client, collection_name='qdrant_rag'))
         self.storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
         self.index = VectorStoreIndex.from_documents(documents=self.parsed_data, storage_context=self.storage_context, show_progress=True)
         self.query_engine=self.index.as_query_engine()
