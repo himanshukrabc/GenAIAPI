@@ -34,7 +34,7 @@ async def load_model():
 async def query(item: Item):
     print(item.query)
     print(model.run(item.query))
-    return {"data":model.run(item.query)}
+    return model.run(item.query)
 
 # GET method to reset context
 @app.get("/reset")

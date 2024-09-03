@@ -155,7 +155,10 @@ class Model:
         self.workflow_graph_compiled.invoke(self.modelState.state)
         self.modelState.update_contexts()
         print("Final State: ", self.modelState.state)
-        return self.modelState.state["summary"]
-            
+        return {
+            "data":self.modelState.state["summary"],
+            "sr_response":self.modelState.state["sr_response"],
+            "doc_response":self.modelState.state["doc_response"],
+        }    
     def model_flush_context(self):
         self.modelState.flush_context()
