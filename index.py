@@ -1,7 +1,7 @@
 from fastapi import FastAPI # type: ignore
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-import json
+
 app = FastAPI()
 
 # Allow CORS for specific origins
@@ -19,21 +19,28 @@ app.add_middleware(
 class Item(BaseModel):
     query: str
 
-from model import SRTModel
-from model2 import LangChain
+from model import Model
 model=None
+queries=""
 
 @app.on_event("startup")
 async def load_model():
     global model
     # Simulate model loading time
-    model = LangChain("t5-small", "t5-small")
-    # model = SRTModel()
+    model = Model()
 
 # POST method to accept item data
 @app.post("/")
 async def query(item: Item):
+    print(item.query)
+    print(model.run(item.query))
     return {"data":model.run(item.query)}
+
+# GET method to reset context
+@app.get("/reset")
+async def chat_reset_context():
+    model.model_flush_context()
+    return {"msg":"done"}
 
 # Running the FastAPI application with Uvicorn (optional if running directly)
 if __name__ == "__main__":
