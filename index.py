@@ -33,9 +33,9 @@ async def load_model():
 # POST method to accept item data
 @app.post("/")
 async def query(item: Item):
-    return model.run(item.query)
+    return {"data":model.run(item.query)}
 
 # Running the FastAPI application with Uvicorn (optional if running directly)
 if __name__ == "__main__":
     import uvicorn # type: ignore
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8001)

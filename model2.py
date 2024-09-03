@@ -1,5 +1,4 @@
 import pickle
-import torch
 from transformers import pipeline
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.core import VectorStoreIndex, StorageContext

@@ -53,7 +53,7 @@ class SRTModel:
     def load_or_parse_data(self):
         data_file = "./parsed_data.pkl"
         if os.path.exists(data_file):
-            with open(data_file, "rb") as f:
+            with open(data_file, "rb") as f:    
                 parsed_data = pickle.load(f)
         else:
             dir_list = os.listdir("./data")
@@ -68,4 +68,8 @@ class SRTModel:
 
     def query(self,q):
         return self.query_engine.query(q)
+model=SRTModel()
+print(model.query_engine.query("What are multi leg shipments?"))
+print(model.query_engine.query("Can you elaborate?"))
 
+print(model.query_engine.get_prompts())

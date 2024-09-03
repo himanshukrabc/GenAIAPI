@@ -11,3 +11,5 @@ llama-index-llms-groq
 fastapi
 uvicorn
 torch
+langgraph
+IPython
