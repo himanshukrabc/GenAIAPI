@@ -11,7 +11,7 @@ import qdrant_client
 from llama_index.core import Settings
 from llama_index.llms.groq import Groq
 import langgraph
-
+import json
 
 
 SR_FILES_PATH="./data/parsed_data.pkl"
@@ -71,6 +71,12 @@ class SummarizationAgent:
         output = self.model(text)
         return output[0]["summary_text"]
     
+class CitationAgent:
+    def __init__(self):
+        self.agent = LLMModelAgent(SR_FILES_PATH,"t5-small",'doc_ind')
+    def get_citation(self,response):
+        citation = self.agent.generate_text("Return me the bug number as bug_number, sr id as sr_id and doc Id as doc_id in the following text in json string format. If no such thing is found the send me null in each property. \nText :" + response.source_nodes[0].node.text)
+        return citation.response
 
 
 # Execute the workflow
@@ -80,7 +86,8 @@ class Model:
         self.doc_query_model = LLMModelAgent(DOC_FILES_PATH,"t5-small",'doc_ind')
         self.summarization_agent = SummarizationAgent("t5-small")
         self.modelState = ModelState()
-
+        self.citation_agent = CitationAgent()
+        self.citations={}
 
         self.workflow_graph = langgraph.graph.StateGraph(dict)
         # Define and nodes to the workflow graph
@@ -120,7 +127,9 @@ class Model:
                 sr_query = "\n".join(["User: "+user_context, "Response: "+sr_context])
 
         sr_query = "\n\n".join([sr_query, "Considering this context of previous chat history, answer this query in the context of Oracle Transport Management:: ", state["prompt"]])
-        state["sr_response"] = self.sr_query_model.generate_text(sr_query).response
+        response = self.sr_query_model.generate_text(sr_query)
+        self.citations=self.citation_agent.get_citation(response)
+        state["sr_response"] = response.response
         return state
 
     def query_doc_model(self,state):
@@ -149,6 +158,8 @@ class Model:
             "data":self.modelState.state["summary"],
             "sr_response":self.modelState.state["sr_response"],
             "doc_response":self.modelState.state["doc_response"],
+            "citations":json.loads(self.citations)
         }    
+    
     def model_flush_context(self):
         self.modelState.flush_context()

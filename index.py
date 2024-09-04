@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-
+import json
 # Allow CORS for specific origins
 origins = ["*"]
 
@@ -32,7 +32,8 @@ async def load_model():
 # POST method to accept item data
 @app.post("/")
 async def query(item: Item):
-    return model.run(item.query)
+    response = model.run(item.query)
+    return response
 
 # GET method to reset context
 @app.post("/reset")
