@@ -32,12 +32,10 @@ async def load_model():
 # POST method to accept item data
 @app.post("/")
 async def query(item: Item):
-    print(item.query)
-    print(model.run(item.query))
     return model.run(item.query)
 
 # GET method to reset context
-@app.get("/reset")
+@app.post("/reset")
 async def chat_reset_context():
     model.model_flush_context()
     return {"msg":"done"}

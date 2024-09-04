@@ -39,7 +39,7 @@ class ModelState:
 
     
 class LLMModelAgent:
-    def __init__(self, data, model_name):
+    def __init__(self, data, model_name,collection):
         self.model = pipeline("text-generation", model=model_name)
         with open(data, "rb") as f:
             llama_parse_documents  = pickle.load(f)
@@ -54,7 +54,7 @@ class LLMModelAgent:
 
         client = qdrant_client.QdrantClient(api_key=qdrant_api_key, url=qdrant_url,)
 
-        vector_store = QdrantVectorStore(client=client, collection_name='qdrant_rag')
+        vector_store = QdrantVectorStore(client=client, collection_name=collection)
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
         index = VectorStoreIndex.from_documents(documents=llama_parse_documents, storage_context=storage_context, show_progress=True)
         self.query_engine = index.as_query_engine()
@@ -73,13 +73,11 @@ class SummarizationAgent:
     
 
 
-
-
 # Execute the workflow
 class Model:   
     def __init__(self):
-        self.sr_query_model = LLMModelAgent(SR_FILES_PATH, model_name="t5-small")
-        self.doc_query_model = LLMModelAgent(DOC_FILES_PATH, model_name="t5-small")
+        self.sr_query_model = LLMModelAgent(SR_FILES_PATH,"t5-small",'sr_ind')
+        self.doc_query_model = LLMModelAgent(DOC_FILES_PATH,"t5-small",'doc_ind')
         self.summarization_agent = SummarizationAgent("t5-small")
         self.modelState = ModelState()
 
@@ -114,7 +112,6 @@ class Model:
         with open("workflow_graph.png", "wb") as f:
             f.write(image_data)
 
-        print("Graph has been saved as 'workflow_graph.png'.")
 
     def query_sr_model(self,state):
         sr_query = ""
@@ -123,7 +120,6 @@ class Model:
                 sr_query = "\n".join(["User: "+user_context, "Response: "+sr_context])
 
         sr_query = "\n\n".join([sr_query, "Considering this context of previous chat history, answer this query in the context of Oracle Transport Management:: ", state["prompt"]])
-        print("Context Preserved SR_QUERY: ", sr_query)
         state["sr_response"] = self.sr_query_model.generate_text(sr_query).response
         return state
 
@@ -133,15 +129,11 @@ class Model:
             for user_context, doc_context in zip(state["user_context"], state["doc_context"]):
                 doc_query = "\n".join(["User: "+user_context, "Response: "+doc_context])
         doc_query = "\n".join([doc_query, "Considering this context of previous chat history, answer this query in the context of Oracle Transport Management: ", state["prompt"]])
-        print("Context Preserved DOC_QUERY: ", doc_query)
         state["doc_response"] = self.doc_query_model.generate_text(doc_query).response
         return state
 
     def query_summarization_model(self,state):
-        summarization_query = "Summarize " + state["sr_response"] + "and \n\n "+state["doc_response"]
-        # print(state["sr_response"])
-        # print(state["doc_response"])
-        # print(summarization_query)
+        summarization_query = "According to Support Request documents," + state["sr_response"] + ".\n\n According to OTM documentation, "+state["doc_response"] + ".\n\n Summarize both the responses."
         state["summary"]=self.summarization_agent.summarize_text(summarization_query)
         return state
 
@@ -151,10 +143,8 @@ class Model:
 
     def run(self,user_input):
         self.modelState.state["prompt"] = user_input
-        print("Initial State: ", self.modelState.state)
         self.workflow_graph_compiled.invoke(self.modelState.state)
         self.modelState.update_contexts()
-        print("Final State: ", self.modelState.state)
         return {
             "data":self.modelState.state["summary"],
             "sr_response":self.modelState.state["sr_response"],
