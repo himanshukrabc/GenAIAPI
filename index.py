@@ -20,6 +20,7 @@ class Item(BaseModel):
     query: str
 
 from model import Model
+from new import SRTModel
 model=None
 queries=""
 
@@ -27,7 +28,7 @@ queries=""
 async def load_model():
     global model
     # Simulate model loading time
-    model = Model()
+    model = SRTModel()
 
 # POST method to accept item data
 @app.post("/")
@@ -44,4 +45,4 @@ async def chat_reset_context():
 # Running the FastAPI application with Uvicorn (optional if running directly)
 if __name__ == "__main__":
     import uvicorn # type: ignore
-    uvicorn.run(app, host="127.0.0.1", port=8001)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

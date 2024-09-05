@@ -41,7 +41,7 @@ class SRTModel:
         self.Settings.embed_model = FastEmbedEmbedding(model_name="BAAI/bge-base-en-v1.5")
         self.Settings.llm = Groq(model="mixtral-8x7b-32768", api_key=groq_api_key)
         self.client = qdrant_client.QdrantClient(api_key=qdrant_api_key, url=qdrant_url,)
-        self.vector_store = QdrantVectorStore(client=self.client, collection_name='qdrant_rag')
+        self.vector_store = QdrantVectorStore(client=self.client, collection_name='doc_doc')
         self.storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
         self.index = VectorStoreIndex.from_documents(documents=self.parsed_data, storage_context=self.storage_context, show_progress=True)
         self.query_engine=self.index.as_query_engine()
@@ -49,7 +49,7 @@ class SRTModel:
 
     # Define a function to load parsed data if available, or parse if not
     def load_or_parse_data(self):
-        data_file = "./parsed_data.pkl"
+        data_file = "./data_doc/parsed_data_1.pkl"
         if os.path.exists(data_file):
             with open(data_file, "rb") as f:
                 parsed_data = pickle.load(f)

@@ -15,7 +15,7 @@ import json
 
 
 SR_FILES_PATH="./data/parsed_data.pkl"
-DOC_FILES_PATH="./data_doc/parsed_data.pkl"
+DOC_FILES_PATH="./data_doc/parsed_data_1.pkl"
 
 LRU_THRESHOLD = 3
 
@@ -71,17 +71,27 @@ class SummarizationAgent:
         output = self.model(text)
         return output[0]["summary_text"]
     
-class CitationAgent:
+class SRCitationAgent:
     def __init__(self):
         self.agent = LLMModelAgent(SR_FILES_PATH,"t5-small",'qdrant_rag')
     def get_citation(self,response):
         citation = self.agent.generate_text(response.source_nodes[0].node.text + "Return me the bug number as bug_number, sr id as sr_id and doc Id as doc_id in the following text in json string format. If no such thing is found the send me null in each property.")
-        response = json.loads(citation.response)
-        if(citation.source_nodes[0].score<0.8) or (response.bug_number==None and response.sr_id==None and response.doc_id==None):
-            return response
-        else:
+        resp = json.loads(citation.response)
+        if(citation.source_nodes[0].score<0.8) or (resp["bug_number"]==None and resp["sr_id"]==None and resp["doc_id"]==None):
             return None
+        else:
+            return resp
 
+class DocCitationAgent:
+    def __init__(self):
+        self.agent = LLMModelAgent(DOC_FILES_PATH,"t5-small",'doc_ind')
+    def get_citation(self,response):
+        citation = self.agent.generate_text(response.source_nodes[0].node.text + "Return me the link as doc_link in the following text in json string format. If no such thing is found the send me null in each property.")
+        resp = json.loads(citation.response)
+        if(citation.source_nodes[0].score<0.4) or (resp["doc_link"]==None ):
+            return None
+        else:
+            return resp
 
 # Execute the workflow
 class Model:   
@@ -90,8 +100,10 @@ class Model:
         self.doc_query_model = LLMModelAgent(DOC_FILES_PATH,"t5-small",'doc_ind')
         self.summarization_agent = SummarizationAgent("t5-small")
         self.modelState = ModelState()
-        self.citation_agent = CitationAgent()
-        self.citations={}
+        self.sr_citation_agent = SRCitationAgent()
+        self.sr_citations={}
+        self.doc_citation_agent = DocCitationAgent()
+        self.doc_citations={}
 
         self.workflow_graph = langgraph.graph.StateGraph(dict)
         # Define and nodes to the workflow graph
@@ -132,7 +144,7 @@ class Model:
 
         sr_query = "\n\n".join([sr_query, "Considering this context of previous chat history, answer this query in the context of Oracle Transport Management:: ", state["prompt"]])
         response = self.sr_query_model.generate_text(sr_query)
-        self.citations=self.citation_agent.get_citation(response)
+        self.sr_citations=self.sr_citation_agent.get_citation(response)
         state["sr_response"] = response.response
         return state
 
@@ -142,7 +154,9 @@ class Model:
             for user_context, doc_context in zip(state["user_context"], state["doc_context"]):
                 doc_query = "\n".join(["User: "+user_context, "Response: "+doc_context])
         doc_query = "\n".join([doc_query, "Considering this context of previous chat history, answer this query in the context of Oracle Transport Management: ", state["prompt"]])
-        state["doc_response"] = self.doc_query_model.generate_text(doc_query).response
+        response = self.doc_query_model.generate_text(doc_query)
+        self.doc_citations=self.doc_citation_agent.get_citation(response)
+        state["doc_response"] = response.response
         return state
 
     def query_summarization_model(self,state):
@@ -162,7 +176,8 @@ class Model:
             "data":self.modelState.state["summary"],
             "sr_response":self.modelState.state["sr_response"],
             "doc_response":self.modelState.state["doc_response"],
-            "citations":self.citations
+            "sr_citations":self.sr_citations,
+            "doc_citations":self.doc_citations
         }    
     
     def model_flush_context(self):
