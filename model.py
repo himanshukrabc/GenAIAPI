@@ -73,10 +73,14 @@ class SummarizationAgent:
     
 class CitationAgent:
     def __init__(self):
-        self.agent = LLMModelAgent(SR_FILES_PATH,"t5-small",'doc_ind')
+        self.agent = LLMModelAgent(SR_FILES_PATH,"t5-small",'qdrant_rag')
     def get_citation(self,response):
-        citation = self.agent.generate_text("Return me the bug number as bug_number, sr id as sr_id and doc Id as doc_id in the following text in json string format. If no such thing is found the send me null in each property. \nText :" + response.source_nodes[0].node.text)
-        return citation.response
+        citation = self.agent.generate_text(response.source_nodes[0].node.text + "Return me the bug number as bug_number, sr id as sr_id and doc Id as doc_id in the following text in json string format. If no such thing is found the send me null in each property.")
+        response = json.loads(citation.response)
+        if(citation.source_nodes[0].score<0.8) or (response.bug_number==None and response.sr_id==None and response.doc_id==None):
+            return response
+        else:
+            return None
 
 
 # Execute the workflow
@@ -158,7 +162,7 @@ class Model:
             "data":self.modelState.state["summary"],
             "sr_response":self.modelState.state["sr_response"],
             "doc_response":self.modelState.state["doc_response"],
-            "citations":json.loads(self.citations)
+            "citations":self.citations
         }    
     
     def model_flush_context(self):
