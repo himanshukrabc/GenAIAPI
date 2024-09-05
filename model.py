@@ -77,10 +77,10 @@ class CitationAgent:
     def get_citation(self,response):
         citation = self.agent.generate_text(response.source_nodes[0].node.text + "Return me the bug number as bug_number, sr id as sr_id and doc Id as doc_id in the following text in json string format. If no such thing is found the send me null in each property.")
         response = json.loads(citation.response)
-        if(citation.source_nodes[0].score<0.8) or (response.bug_number==None and response.sr_id==None and response.doc_id==None):
-            return response
-        else:
+        if(citation.source_nodes[0].score<0.8) or (response["bug_number"]==None and response["sr_id"]==None and response["doc_id"]==None):
             return None
+        else:
+            return response
 
 
 # Execute the workflow
