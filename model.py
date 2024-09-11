@@ -135,7 +135,7 @@ class Model:
         with open("workflow_graph.png", "wb") as f:
             f.write(image_data)
 
-
+    #this stores the query state for the SR model
     def query_sr_model(self,state):
         sr_query = ""
         if "user_context" in state.keys():
@@ -148,6 +148,7 @@ class Model:
         state["sr_response"] = response.response
         return state
 
+    #Stores the query state for the doc model
     def query_doc_model(self,state):
         doc_query=""
         if "user_context" in state.keys():
@@ -159,12 +160,13 @@ class Model:
         state["doc_response"] = response.response
         return state
 
+    #Stores the query state for the summarization model
     def query_summarization_model(self,state):
         summarization_query = "According to Support Request documents," + state["sr_response"] + ".\n\n According to OTM documentation, "+state["doc_response"] + ".\n\n Summarize both the responses."
         state["summary"]=self.summarization_agent.summarize_text(summarization_query)
         return state
 
-    
+    #When new chat is done no state needs to be stored
     def no_operation(self,state):
         return state
 
@@ -173,9 +175,10 @@ class Model:
         self.modelState.state["prompt"] = user_input
         self.workflow_graph_compiled.invoke(self.modelState.state)
         self.modelState.update_contexts()
+        #This is the model initializer agent which initializes the model
         return {
             "data":self.modelState.state["summary"],
-            "sr_response":self.modelState.state["sr_response"],
+            "sr_response":self.modelState.state["sr_response"],  
             "doc_response":self.modelState.state["doc_response"],
             "sr_citations":self.sr_citations,
             "doc_citations":self.doc_citations
