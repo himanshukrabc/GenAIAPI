@@ -164,10 +164,11 @@ class Model:
         state["summary"]=self.summarization_agent.summarize_text(summarization_query)
         return state
 
+    
     def no_operation(self,state):
         return state
 
-
+    #main function from where we run the model
     def run(self,user_input):
         self.modelState.state["prompt"] = user_input
         self.workflow_graph_compiled.invoke(self.modelState.state)
