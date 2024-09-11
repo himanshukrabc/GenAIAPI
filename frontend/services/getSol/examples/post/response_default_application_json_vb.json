@@ -1,0 +1,10 @@
+{
+    "data": "support requests documents,Hello! . check the configuration settings to ensure the currency code is retained . review customizations or integrations for unintentional currency code removal .",
+    "sr_response": "Hello! If you're using Oracle Transportation Management and encountering an issue where the currency code is being removed in buy shipment cost updates, there are a few steps you can take:\n\n1. Check the configuration settings to ensure the currency code is retained during cost updates.\n2. Review any customizations or integrations for unintentional currency code removal.\n3. If you need further assistance, consider contacting Oracle Support.\n\nThis behavior of nulling out the currency at the shipment header level is expected when manually assigning a new rate or cost. However, if you need to retain the currency code, consider the suggested workarounds or reach out to Oracle Support for help.",
+    "doc_response": "Hello! If you're facing an issue in Oracle Transport Management where the currency code is removed when there's a change in service provider and an accessorial cost is created, you can use a workaround. You can obtain the currency from another source or store it in a reference number and use it from there. This is due to the design of the system, which intentionally nulls out the currency at the shipment header level when a new rate or cost is manually assigned to the shipment.",
+    "citations": {
+        "bug_number": null,
+        "sr_id": "3-13075113151",
+        "doc_id": "2166886.1"
+    }
+}

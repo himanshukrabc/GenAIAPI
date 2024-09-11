@@ -1,0 +1,76 @@
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.chat-header {
+  width: 100%;
+  float: left;
+  display: inline-flex;
+  background-color: #ffffff00;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.chat-content {
+  width: 100%;
+  min-height: 60vh;
+}
+.oj-inputtext-input {
+  color: #312D2A;
+  font-size: 16px;
+  padding: 0 20px; 
+  width: 800px;
+  height: 50px;
+  text-align: left; 
+  border-radius: 25px;
+}
+
+.bot-text {
+  text-align: left;
+  color: #56504B;
+  background-color: #d6d4d2;
+  max-width: 500px;
+  padding: 20px;
+  margin: 5px 0;
+  border-radius: 25px;
+  float: left;
+  word-break: break-word;
+}
+.user-text {
+  text-align: left;
+  color: #FCFBFA;
+  background-color: #56504B;
+  max-width: 500px;
+  padding: 20px;
+  margin: 5px 0;
+  border-radius: 25px;
+  float: right;
+  word-break: break-word;
+}
+.oj-listview {
+  display: block;
+  position: relative;
+  border-width: 0 !important;
+  border-style: solid;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  min-height: 2.28571rem;
+}
+.oj-listview-item {
+  padding: 0 !important;
+  background-image: none !important;
+  border: 0 !important;
+}
+.oj-listview-item.oj-hover {
+  border: 0 !important;
+}
+.oj-listview-item.oj-focus {
+  border: 0 !important;
+}
+.oj-listview-focused-element {
+  border: 0 !important;
+}

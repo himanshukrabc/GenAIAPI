@@ -1,0 +1,94 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "03f8 2401 4900 16b7 5646 650a C99e 4353 89fb Ngrok Free App",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "vb-catalog://backends/tmBackend"
+        }
+    ],
+    "paths": {
+        "/": {
+            "post": {
+                "operationId": "post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PostRequest"
+                            },
+                            "examples": {
+                                "vb": {
+                                    "externalValue": "./examples/post/request_application_json_vb.json"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "default": {
+                        "description": "Response for default",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PostResponse"
+                                },
+                                "examples": {
+                                    "vb": {
+                                        "summary": "Example stored by VB User",
+                                        "externalValue": "./examples/post/response_default_application_json_vb.json"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-vb": {
+                    "actionHint": "getOne"
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "PostRequest": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PostResponse": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "string"
+                    },
+                    "sr_response": {
+                        "type": "string"
+                    },
+                    "doc_response": {
+                        "type": "string"
+                    },
+                    "citations": {
+                        "type": "object",
+                        "properties": {
+                            "bug_number": {
+                                "nullable": true
+                            },
+                            "sr_id": {
+                                "type": "string"
+                            },
+                            "doc_id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

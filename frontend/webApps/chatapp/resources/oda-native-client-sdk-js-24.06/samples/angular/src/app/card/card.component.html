@@ -1,0 +1,21 @@
+<div *ngIf="messagePayload">
+  <div class="card">
+    <div class="header">This is a Angular Component</div>
+    <ul>
+      <li class="card-item" *ngFor="let card of messagePayload.cards">
+        <div class="card-info">
+          <img class="card-image" [src]="card.imageUrl" alt="Card" />
+          <div class="info">
+            <div class="title">{{card.title}}</div>
+            <div class="actions">
+              <button *ngFor="let action of card.actions" (click)="onActionClick(action)">{{action.label}}</button>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="actions-wrapper" *ngIf="messagePayload.actions && messagePayload.actions.length">
+    <button *ngFor="let action of messagePayload.actions" (click)="onActionClick(action)">{{action.label}}</button>
+  </div>
+</div>

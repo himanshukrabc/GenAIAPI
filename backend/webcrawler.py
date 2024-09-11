@@ -18,7 +18,7 @@ def get_links(url):
     try:
         data = response.text
         soup = BeautifulSoup(data, 'html.parser')
-
+        # BeautifulSoup to parse HTML
         links = []
         for link in soup.find_all('a'):
             link_url = link.get('href')
@@ -48,7 +48,7 @@ def write_to_file(links):
 
 
 def get_all_links(url, depth=1):
-    if depth > 3:  # Limit the recursion depth to avoid infinite loops
+    if depth > 3:  # Limit the recursion depth to avoid infinite loops of links
         return
     for link in get_links(url):
         get_all_links(link.strip(), depth + 1)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if not os.path.exists('links.txt'):
         print("links.txt file not found.")
         exit()
-
+    
     with open('links.txt', 'r') as file:
         urls = file.readlines()
 

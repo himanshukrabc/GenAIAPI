@@ -9,6 +9,8 @@ from llama_parse import LlamaParse
 llamaparse_api_key = os.getenv("LLAMA_CLOUD_API_KEY")
 import pickle
 
+#We have parsed the data and stored it in a .pkl file and uploaded on GitHub since we cannot upload the internal files.
+
 def load_or_parse_data():
     data_file = "./data/parsed_data.pkl"
     #seeing if already parsed, we have static files for now

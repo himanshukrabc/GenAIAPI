@@ -1,0 +1,48 @@
+{
+  "name": "oracle.cloud.oda.chat",
+  "displayName": "ODA Chat",
+  "version": "22.10.0",
+  "description": "A sample Apache Cordova application that integrates ODA Web SDK",
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.oci.oraclecorp.com:7999/oda/oda-web-sdk.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "(cd ../.. && npm run build)",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Oracle Digital Assistant",
+  "license": "UPL-1.0",
+  "devDependencies": {
+    "cordova-android": "^10.1.1",
+    "cordova-browser": "^6.0.0",
+    "cordova-ios": "^6.2.0",
+    "cordova-plugin-audioinput": "^1.0.1",
+    "cordova-plugin-camera": "^6.0.0",
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-device": "^2.0.3",
+    "cordova-plugin-geolocation": "^4.1.0",
+    "cordova-plugin-whitelist": "^1.3.5",
+    "phonegap-plugin-speech-synthesis": "^0.1.1"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-audioinput": {},
+      "cordova-plugin-camera": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
+      "cordova-plugin-device": {},
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "true"
+      },
+      "phonegap-plugin-speech-synthesis": {}
+    },
+    "platforms": [
+      "android",
+      "browser",
+      "ios"
+    ]
+  }
+}

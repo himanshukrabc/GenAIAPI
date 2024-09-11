@@ -1,0 +1,37 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "TmBackend",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "vb-catalog://backends/tmBackend",
+            "description": "TmBackend"
+        }
+    ],
+    "paths": {
+        "/reset": {
+            "post": {
+                "operationId": "getReset",
+                "responses": {
+                    "default": {
+                        "description": "Default response",
+                        "content": {
+                            "application/json": {
+                                "examples": {
+                                    "vb": {
+                                        "externalValue": "./examples/getReset/response_default_application_json_vb.json"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "x-vb": {
+                    "actionHint": "getOne"
+                }
+            }
+        }
+    }
+}

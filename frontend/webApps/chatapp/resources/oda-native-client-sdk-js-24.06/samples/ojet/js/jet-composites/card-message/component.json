@@ -1,0 +1,26 @@
+{
+  "name": "card-message",
+  "version": "1.0.0",
+  "jetVersion": "^11.1.0",
+  "displayName": "A user friendly, translatable name of the component.",
+  "description": "A translatable high-level description for the component.",
+  "properties": {
+    "messagePayload": {
+      "description": "Card Message Payload",
+      "displayName": "Message Payload",
+      "type": "object"
+  }
+  },
+  "methods": {
+
+  }, 
+  "events": {
+    "actionClick": {
+      "description": "Event trigerred when action is clicked",
+      "bubbles": false
+    }
+  }, 
+  "slots": {
+
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "main",
+  "description": "Flow main",
+  "defaultPage": "main-start",
+  "services": {},
+  "types": {
+    "@decorators.post": {
+      "endpoint": "post",
+      "service": "demoService",
+      "path": "request"
+    },
+    "post": {
+      "query": "string"
+    }
+  },
+  "variables": {
+    "variable1": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+<!--
+  Copyright (c) 2015, 2021, Oracle and/or its affiliates.
+  Licensed under The Universal Permissive License (UPL), Version 1.0
+  as shown at https://oss.oracle.com/licenses/upl/
+
+-->
+<div id="conveyorbelt-horizontal-example">
+  <div class="oj-flex">
+    <oj-conveyor-belt
+      id="conveyorBelt"
+      class="oj-flex-item"
+      data-oj-binding-provider="none">
+      <oj-bind-for-each data="[[cardsDataProvider]]">
+        <template>
+          <div class="oj-panel card" :id="[[$current.data.title]]" class="oj-sm-margin-1x"}" ]]">
+            <img class="card-image" :src="[[$current.data.imageUrl]]" />
+            <div class="title"><oj-bind-text value="[[$current.data.title]]"></oj-bind-text></div>
+            <oj-bind-if test="[[$current.data.actions && $current.data.actions.length]]">
+              <oj-bind-for-each data="[[$current.data.actions]]">
+                <template data-oj-as="action">
+                  <oj-button chroming="solid" id="solidPushText" class="card-button" on-oj-action="[[() => handleActionClick(action.data)]]">
+                    <oj-bind-text value="[[action.data.label]]">
+                  </oj-button>
+                </template>
+              </oj-bind-for-each>
+            </oj-bind-if>
+          </div>
+        </template>
+      </oj-bind-for-each>
+    </oj-conveyor-belt>
+    <oj-bind-if test="[[actionsDataProvider]]">
+      <div class="actions-wrapper">
+        <oj-bind-for-each data="[[actionsDataProvider]]">
+          <template data-oj-as="action">
+            <oj-button chroming="solid" id="solidPushText" class="card-button" on-oj-action="[[() => handleActionClick(action.data)]]">
+              <oj-bind-text value="[[action.data.label]]">
+            </oj-button>
+          </template>
+        </oj-bind-for-each>
+      </div>
+    </oj-bind-if>
+  </div>
+</div>

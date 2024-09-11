@@ -4,6 +4,9 @@ from fpdf import FPDF
 import os
 from tqdm import tqdm
 
+#Storing in pdfs so that we do not need to build a new model which takes in text
+
+
 # Function to fetch and process webpage content
 def fetch_content(url):
     try:

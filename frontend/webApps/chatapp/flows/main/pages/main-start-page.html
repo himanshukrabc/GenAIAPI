@@ -1,0 +1,89 @@
+<div class="main-container" position="fixed">
+  <div>
+    <div class="oj-flex-col chat-header" style="padding-top:25px;">
+      <oj-input-text id="oj-input-text--1701864895-1" value="{{ $variables.query }}"
+        class="oj-form-control-max-width-lg" placeholder=" Type a query...">
+      </oj-input-text>
+      <div class="oj-flex-item oj-sm-flex-initial" on-oj-action="[[$listeners.buttonAction]]">
+        <oj-button label="Send"></oj-button>
+      </div>
+      <div class="oj-flex-item oj-sm-flex-initial">
+        <oj-button label="New Chat"" on-oj-action=" [[$listeners.buttonAction2]]"></oj-button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oj-flex">
+  <div class="chat-content oj-flex-item oj-sm-12 oj-md-12" style="padding-top:40px;">
+    <div id="chat" class="oj-flex oj-sm-flex-direction-column" data-vb-layout-type="flex">
+      <oj-bind-if test="[[ $variables.messagesADP.data.length > 0 ]]">
+        <oj-list-view id="oj-list-view-chat" class="oj-flex-item oj-sm-12 oj-md-12 oj-full-width"
+          data="[[ $variables.messagesADP ]]" drill-mode="none" scroll-policy="loadAll">
+          <template slot="itemTemplate">
+            <oj-vb-list-item>
+              <oj-bind-if test="[[ $current.data.is_user == true ]]">
+                <div slot="value1" class="user-text">
+                  <oj-bind-text value="[[ $current.data.textdata ]]"></oj-bind-text>
+                </div>
+              </oj-bind-if>
+              <oj-bind-if test="[[ $current.data.is_user == false ]]">
+                <div slot="title2" class="bot-text">
+                  <oj-bind-text value="[[ $current.data.textdata ]]"></oj-bind-text>
+                  <!-- SR RESPONSE -->
+                  <div class="oj-flex">
+                    <oj-collapsible>
+                      <div slot="header">
+                        <b>SR Response</b>
+                      </div>
+                      <p>
+                        <oj-bind-text value="[[ $current.data.srdata ]]"></oj-bind-text>
+                      </p>
+                      <!-- CITATIONS -->
+                      <oj-bind-if test="[[ $current.data.citations.doc_id !== null && $current.data.citations.sr_id !== null && $current.data.citations.bug_number !== null]]">
+                        <p>
+                          <oj-bind-if test="[[ $current.data.citations.doc_id !== null ]]">
+                            Doc Id Referenced : <oj-bind-text value="[[ $current.data.citations.doc_id ]]">
+                            </oj-bind-text>
+                          </oj-bind-if>
+                          <br>
+                          <oj-bind-if test="[[ $current.data.citations.sr_id !== null ]]">
+                            SR Id Referenced : <oj-bind-text value="[[ $current.data.citations.sr_id ]]"></oj-bind-text>
+                          </oj-bind-if>
+                          <br>
+                          <oj-bind-if test="[[ $current.data.citations.bug_number !== null ]]">
+                            Bug Number Referenced : <oj-bind-text value="[[ $current.data.citations.bug_number ]]">
+                            </oj-bind-text>
+                          </oj-bind-if>
+                        </p>
+                      </oj-bind-if>
+                    </oj-collapsible>
+                  </div>
+
+                  <!-- DOC RESPONSE -->
+                  <div class="oj-flex">
+                    <oj-collapsible>
+                      <div slot="header">
+                        <b>Doc Response</b>
+                      </div>
+                      <p>
+                        <oj-bind-text value="[[ $current.data.docdata ]]"></oj-bind-text>
+                      </p>
+                    </oj-collapsible>
+                  </div>
+                </div>
+
+                <!-- <div slot="title2" class="bot-text">
+                  <oj-bind-text value="[[ $current.data.srdata ]]"></oj-bind-text>
+                </div> -->
+                <!-- <div slot="title2" class="bot-text">
+                  <oj-bind-text value="[[ $current.data.docdata ]]"></oj-bind-text>
+                </div> -->
+              </oj-bind-if>
+            </oj-vb-list-item>
+          </template>
+        </oj-list-view>
+      </oj-bind-if>
+    </div>
+  </div>
+</div>
+</div>

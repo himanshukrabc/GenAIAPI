@@ -1,0 +1,374 @@
+{
+ "pageModelVersion": "19.3.1",
+ "title": "OTM Assistant",
+ "description": "",
+ "variables": {
+        "chats": {
+            "type": "chatBubble[]"
+        },
+        "data": {
+            "type": "string"
+        },
+  "enableVoice": {
+   "type": "boolean",
+   "defaultValue": false
+  },
+        "past_Query": {
+            "type": "string"
+        },
+        "query": {
+            "type": "string"
+        },
+        "userMessage": {
+   "type": "message",
+            "defaultValue": "[[ $variables.userMessage ]]",
+            "input": "none"
+  },
+  "messages": {
+   "type": "message[]"
+  },
+  "messagesADP": {
+   "type": "vb/ArrayDataProvider",
+   "defaultValue": {
+    "data": "{{ $variables.chats }}",
+    "itemType": "chatBubble"
+   }
+  },
+  "connected": {
+   "type": "boolean",
+   "defaultValue": false
+  },
+        "v1": {
+            "type": "vb/ArrayDataProvider2"
+        }
+
+ },
+ "metadata": {},
+ "types": {
+        "@decorators.post": {
+            "endpoint": "post",
+            "service": "demoName",
+            "path": "request"
+        },
+        "@decorators.resp": {
+            "endpoint": "post",
+            "service": "getSol",
+            "path": "response"
+        },
+        "chatBubble": {
+            "citations": "cit",
+            "docdata": "string",
+            "is_user": "boolean",
+            "srdata": "string",
+            "textdata": "string"
+
+        },
+        "cit": {
+            "bug_number": "string",
+            "doc_id": "string",
+            "sr_id": "string"
+        },
+        "message": {
+   "messagePayload": "object",
+   "sender": "string"
+  },
+        "post": {
+            "query": "string"
+        },
+        "resetResp": "object",
+        "resp": {
+            "citations": {
+                "bug_number": "any",
+                "doc_id": "string",
+                "sr_id": "string"
+            },
+            "data": "string",
+            "doc_response": "string",
+            "sr_response": "string"
+
+        }
+
+ },
+ "chains": {
+  "VoiceRecordingActionChain": {
+   "root": "assignVariables1",
+   "description": "",
+   "actions": {
+    "if1": {
+     "module": "vb/action/builtin/ifAction",
+     "parameters": {
+      "condition": "[[ $page.variables.enableVoice ]]"
+     },
+     "outcomes": {
+      "true": "callStartVocieRecordingFunction",
+      "false": "callStopVocieRecordingFunction"
+     }
+    },
+    "callStartVocieRecordingFunction": {
+     "module": "vb/action/builtin/callModuleFunctionAction",
+     "parameters": {
+      "module": "[[ $page.functions ]]",
+      "functionName": "startVoiceRecording"
+     },
+     "outcomes": {
+      "success": "resetVariables1"
+     }
+    },
+    "callStopVocieRecordingFunction": {
+     "module": "vb/action/builtin/callModuleFunctionAction",
+     "parameters": {
+      "module": "[[ $page.functions ]]",
+      "functionName": "stopVoiceRecording"
+     },
+     "outcomes": {
+      "success": "resetVariables1"
+     }
+    },
+    "assignVariables1": {
+     "module": "vb/action/builtin/assignVariablesAction",
+     "parameters": {
+      "$page.variables.enableVoice": {
+       "source": "{{ !$page.variables.enableVoice }}"
+      }
+     },
+     "outcomes": {
+      "success": "if1"
+     }
+    },
+    "resetVariables1": {
+     "module": "vb/action/builtin/resetVariablesAction",
+     "parameters": {
+      "variables": [
+       "$page.variables.enableVoice"
+      ]
+     }
+    }
+   }
+  },
+  "InputKeypressActionChain": {
+   "description": "",
+   "variables": {
+    "detail": {
+     "required": true,
+     "type": "any",
+     "input": "fromCaller"
+    }
+   },
+   "root": "",
+   "actions": {
+   }
+  },
+  "InitBotActionChain": {
+   "root": "callModuleFunction1",
+   "description": "",
+   "actions": {
+    "callModuleFunction1": {
+     "module": "vb/action/builtin/callModuleFunctionAction",
+     "parameters": {
+      "module": "[[ $page.functions ]]",
+      "functionName": "init"
+     }
+    }
+   }
+  },
+  "SendMessageActionChain": {
+   "root": "callModuleFunction1",
+   "description": "",
+   "actions": {
+    "callModuleFunction1": {
+     "module": "vb/action/builtin/callModuleFunctionAction",
+     "parameters": {
+      "module": "[[ $page.functions ]]",
+      "functionName": "sendMessage",
+      "params": [
+       "{{ $page.variables.userMessage }}",
+       "$page.variables.messagesADP"
+      ],
+                        "returnType": "flow:postObjectsSDP"
+     }
+    }
+   },
+   "variables": {
+                "usermessage": {
+                    "type": "string",
+                    "defaultValue": "[[ $page.variables.userMessage ]]",
+                    "required": false,
+                    "input": "fromCaller"
+                }
+   },
+            "returnType": "post"
+  },
+  "MessageActionChain": {
+   "root": "assignVariables2",
+   "description": "",
+   "actions": {
+    "assignVariables2": {
+     "module": "vb/action/builtin/assignVariablesAction",
+     "parameters": {
+      "$page.variables.messages": {
+       "source": [
+        {
+         "messagePayload": "{{ $chain.variables.messagePayload }}",
+         "sender": "{{ $chain.variables.sender }}"
+        }
+       ],
+       "reset": "none",
+       "auto": "always"
+      }
+     }
+    }
+   },
+   "variables": {
+    "sender": {
+     "type": "string",
+     "required": true,
+     "input": "fromCaller"
+    },
+    "messagePayload": {
+     "type": "any",
+     "required": true,
+     "input": "fromCaller"
+    }
+   }
+  },
+  "BotStatusActionChain": {
+   "root": "assignVariables1",
+   "description": "",
+   "variables": {
+    "connected": {
+     "type": "boolean",
+     "required": true,
+     "input": "fromCaller"
+    }
+   },
+   "actions": {
+    "assignVariables1": {
+     "module": "vb/action/builtin/assignVariablesAction",
+     "parameters": {
+      "$page.variables.connected": {
+       "source": "{{ $chain.variables.connected }}"
+      }
+     }
+    }
+   }
+  }
+ },
+ "eventListeners": {
+        "buttonAction": {
+            "chains": [
+                {
+                    "chain": "ChatActionChain"
+                }
+            ]
+        },
+        "buttonAction2": {
+            "chains": [
+                {
+                    "chain": "NewChatActionChain"
+                }
+            ]
+        },
+        "img17018648951Click": {
+   "chains": [
+    {
+     "chainId": "VoiceRecordingActionChain"
+    }
+   ]
+  },
+  "vbBeforeEnter": {
+   "chains": [
+    {
+     "chainId": "InitBotActionChain",
+     "parameters": {}
+    }
+   ]
+  },
+  "messageReceived": {
+   "chains": [
+    {
+     "chainId": "MessageActionChain",
+     "parameters": {
+      "sender": "bot",
+      "messagePayload": "{{ $event.message.messagePayload }}"
+     }
+    }
+   ]
+  },
+  "messageSent": {
+   "chains": [
+    {
+     "chainId": "MessageActionChain",
+     "parameters": {
+      "sender": "user",
+      "messagePayload": "{{ $event.message.messagePayload }}"
+     }
+    }
+   ]
+  },
+  "OJBUTTON17018648951OjAction": {
+   "chains": [
+    {
+     "chainId": "SendMessageActionChain",
+     "parameters": {
+      "payload": "{{ $current.data.actions[0] }}",
+      "type": "{{ $constants.postback }}"
+     }
+    }
+   ]
+  },
+  "botStatus": {
+   "chains": [
+    {
+     "chainId": "BotStatusActionChain",
+     "parameters": {
+      "connected": "$event.connected"
+     }
+    }
+   ]
+  }
+
+ },
+ "imports": {
+  "components": {
+            "oj-action-card": {
+                "path": "ojs/ojactioncard"
+            },
+            "oj-button": {
+                "path": "ojs/ojbutton"
+            },
+            "oj-collapsible": {
+                "path": "ojs/ojcollapsible"
+            },
+            "oj-input-text": {
+    "path": "ojs/ojinputtext"
+   },
+   "oj-list-view": {
+    "path": "ojs/ojlistview"
+   },
+            "oj-vb-list-item": {
+    "path": "vb/components/list-item/loader"
+   },
+   "oj-label": {
+    "path": "ojs/ojlabel"
+   }
+
+  }
+ },
+ "events": {
+  "messageReceived": {
+   "payloadType": {
+    "message": "object"
+   }
+  },
+  "messageSent": {
+   "payloadType": {
+    "message": "object"
+   }
+  },
+  "botStatus": {
+   "payloadType": {
+    "connected": "boolean"
+   }
+  }
+ }
+}
