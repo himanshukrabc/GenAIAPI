@@ -13,11 +13,11 @@ from llama_index.llms.groq import Groq
 import langgraph
 import json
 
-
+#The parsed files data stored in .pkl files
 SR_FILES_PATH="./data/parsed_data.pkl"
 DOC_FILES_PATH="./data_doc/parsed_data_1.pkl"
 
-LRU_THRESHOLD = 3
+LRU_THRESHOLD = 3 #can change this when required, maintains context
 
 class ModelState:
     def __init__(self):
@@ -31,24 +31,25 @@ class ModelState:
         if len(self.state["user_context"]) == LRU_THRESHOLD:
             self.state["user_context"].pop(0)
         
-        self.state["user_context"].append(self.state["prompt"])
+        #maintaining state manually
+        self.state["user_context"].append(self.state["prompt"]) 
         self.state["doc_context"].append(self.state["doc_response"])
         self.state["sr_context"].append(self.state["sr_response"])
     def flush_context(self):
         self.state["doc_context"], self.state["sr_context"], self.state["user_context"], self.state["sr_response"], self.state["doc_response"], self.state["prompt"] = [], [], [], [], [], []
 
-    
+
 class LLMModelAgent:
     def __init__(self, data, model_name,collection):
         self.model = pipeline("text-generation", model=model_name)
         with open(data, "rb") as f:
             llama_parse_documents  = pickle.load(f)
         qdrant_url = os.getenv("QDRANT_URL")
-        qdrant_api_key = os.getenv("QDRANT_API_KEY")
+        qdrant_api_key = os.getenv("QDRANT_API_KEY")  #Qdrant is out vector database
         embed_model = FastEmbedEmbedding(model_name="BAAI/bge-base-en-v1.5")
         Settings.embed_model = embed_model
         groq_api_key = os.getenv("GROQ_API_KEY")
-
+        #using llm model
         llm = Groq(model="mixtral-8x7b-32768", api_key=groq_api_key)
         Settings.llm = llm
 
@@ -59,10 +60,12 @@ class LLMModelAgent:
         index = VectorStoreIndex.from_documents(documents=llama_parse_documents, storage_context=storage_context, show_progress=True)
         self.query_engine = index.as_query_engine()
         
+
     def generate_text(self, prompt):
-        response = self.query_engine.query(prompt)
+        response = self.query_engine.query(prompt)  #query engine takes in query, did not use chat engine as it is very heavy
         return response
     
+
 class SummarizationAgent:
     def __init__(self, model_name):
         self.model = pipeline("summarization", model=model_name)
@@ -70,7 +73,8 @@ class SummarizationAgent:
     def summarize_text(self, text):
         output = self.model(text)
         return output[0]["summary_text"]
-    
+
+#stores state for SR citations
 class SRCitationAgent:
     def __init__(self):
         self.agent = LLMModelAgent(SR_FILES_PATH,"t5-small",'qdrant_rag')
@@ -183,6 +187,6 @@ class Model:
             "sr_citations":self.sr_citations,
             "doc_citations":self.doc_citations
         }    
-    
+    #flushes context, starts a new chat without any state
     def model_flush_context(self):
         self.modelState.flush_context()
